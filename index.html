@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Malicious URL Detector</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f2f2;
+      padding: 40px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+    #result {
+      font-weight: bold;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Malicious URL Detector</h1>
+  <input type="text" id="urlInput" placeholder="Enter URL">
+  <button onclick="checkURL()">Check</button>
+  <div id="result"></div>
+
+  <script>
+  async function checkURL() {
+    const url = document.getElementById("urlInput").value;
+    const resultDiv = document.getElementById("result");
+    resultDiv.textContent = "Checking...";
+
+    try {
+      const response = await fetch("http://localhost:5000/predict", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url })
+      });
+
+      if (!response.ok) {
+        throw new Error("Server error: " + response.statusText);
+      }
+
+      const data = await response.json();
+      resultDiv.textContent = "Prediction: " + data.result;
+    } catch (error) {
+      console.error("Error:", error);
+      resultDiv.textContent = "Error: " + error.message;
+    }
+  }
+</script>
+
+</body>
+</html>
